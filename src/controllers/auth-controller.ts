@@ -1,3 +1,4 @@
+import { Observable } from 'rxjs';
 import { AuthService } from './../services/';
 import { ReactiveController, ReactiveControllerHost } from "lit";
 
@@ -6,12 +7,11 @@ import { ReactiveController, ReactiveControllerHost } from "lit";
 export class AuthController implements ReactiveController {
     host: ReactiveControllerHost;
     authService: AuthService
-    authService2: AuthService
+   
 
     constructor(host: ReactiveControllerHost) {
         (this.host = host).addController(this);
         this.authService = new AuthService();
-        this.authService2 = new AuthService();
         console.log('AUTH CONTROLLER');
         
         
@@ -23,13 +23,27 @@ export class AuthController implements ReactiveController {
         // this._timerID = setInterval(() => {
         //   this.value = new Date();
         //   // Update the host with new value
-          this.host.requestUpdate();
+        //  this.host.requestUpdate();
         // }, this.timeout);
       }
       hostDisconnected() {
         // Clear the timer when the host is disconnected
         // clearInterval(this._timerID);
         // this._timerID = undefined;
+      }
+
+      get authenticated$(): Observable<boolean> {
+        return this.authService.authenticated$;
+      }
+      
+      login(){
+        console.log('AuthController login');
+        this.authService.login();
+      }
+      
+      logout(){
+        console.log('AuthController logout');
+        this.authService.logout();
       }
 
 }

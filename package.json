@@ -22,7 +22,8 @@
     "test:watch": "tsc && concurrently -k -r \"tsc --watch --preserveWatchOutput\" \"wtr --watch\""
   },
   "dependencies": {
-    "lit": "^3.1.1"
+    "lit": "^3.1.1",
+    "rxjs": "^7.8.1"
   },
   "devDependencies": {
     "@custom-elements-manifest/analyzer": "^0.9.0",
@@ -58,11 +59,12 @@
     "rules": {
       "no-unused-vars": "off",
       "lit/no-classfield-shadowing": "off",
-      
       "@typescript-eslint/no-unused-vars": [
         "error"
       ],
-      "import/no-unresolved": ["error"],
+      "import/no-unresolved": [
+        "error"
+      ],
       "import/extensions": [
         "error",
         "never",
