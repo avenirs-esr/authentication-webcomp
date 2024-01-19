@@ -87,7 +87,7 @@ export class AuthService {
     /**
      * Introspects a JWT.
      * @param url The introspection end point.
-     * @param jwt The JWT to check.
+     * @param jwt The JWT to introspect.
      * @returns The introspection data.
      */
     private async _introspect(url: string, jwt: string) {
@@ -102,9 +102,9 @@ export class AuthService {
             method: "post",
         });
         const status = response.status
-        console.log('_apiCall status', status);
+        console.log('_introspect status', status);
         const data =  response.json();
-        console.log('_apiCall data', data);
+        console.log('_introspect data', data);
         return data;
     }
 
