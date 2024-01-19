@@ -27,6 +27,10 @@ export class AuthService {
     /** The active jwt  observable. */
     private jwt$ = new ReplaySubject<string>(1);
 
+
+
+   
+
     /**
      * Singleton constructor.
      * @returns the unique instance of this class. 
@@ -42,43 +46,57 @@ export class AuthService {
     /**
      * Trye to fectch a JWT.
      * @param onlySessionStorage Flag to determine if the JWT can be retrieved from the location.
-     */ 
+     */
     private _initializeJWT(onlySessionStorage = false) {
         this._settingsProvider.settings$.pipe(
             filter(settings => !!settings?.jwtStorageKey),
             take(1)
         ).subscribe(settings => {
-            
+            let authenticated = false;
             // Flag to determine if an invalid jwk has to be removed from storage.
             let cleanStorageFlag = false;
             let jwt = '';
-            if (! onlySessionStorage) {
-            const urlParams = new URLSearchParams(window.location.href.split('#')?.[1]);
-            jwt = urlParams.get('access_token') || '';
+            if (!onlySessionStorage) {
+                const urlTokens = window.location.href.split('#');
+                console.log('_initializeJWT urlTokens', urlTokens);
+                const newLocation = urlTokens?.[0];
+                if (newLocation !== window.location.href) {
+                    console.log('_initializeJWT newLocation', newLocation);
+                    history.replaceState({}, '', newLocation);
+                }
+                const urlParams = new URLSearchParams(urlTokens?.[1]);
+                jwt = urlParams.get('access_token') || '';
+                
 
-            console.log('_initializeJWT jwt', jwt);
+                console.log('_initializeJWT jwt', jwt);
             }
 
-            if (!jwt) { 
+            if (!jwt) {
                 jwt = sessionStorage.getItem(settings.jwtStorageKey) || '';
                 cleanStorageFlag = true; // If the jwt is not valid it has to be removed from session storage.
             }
-            if (jwt){
+            if (jwt) {
+                
                 // [TODO] Select the host from the one in the location.
                 this._introspect("http://localhost/node-api/cas-auth-validate", jwt)
-                .then(data => {
-                    console.log('_initializeJWT data', data);
-                    const authenticated=data?.active;
-                    this.authenticated$.next(authenticated);
-                    console.log('_initializeJWT authenticated', authenticated);
-                    if (authenticated){
-                        sessionStorage.setItem(settings.jwtStorageKey, jwt);
-                        this.jwt$.next(jwt);
-                    } else if (cleanStorageFlag){
-                        sessionStorage.removeItem(settings.jwtStorageKey);
-                    }
-                })
-                .catch(err => console.log('_initializeJWT err', err));
+                    .then(data => {
+                        console.log('_initializeJWT data', data);
+                        authenticated = data?.active;
+                        console.log('_initializeJWT data', data);
+                        
+                        console.log('_initializeJWT authenticated', authenticated);
+                        if (authenticated) {
+                            sessionStorage.setItem(settings.jwtStorageKey, jwt);
+                            this.jwt$.next(jwt);
+                        } else if (cleanStorageFlag) {
+                            sessionStorage.removeItem(settings.jwtStorageKey);
+                        }
+                    })
+                    .catch(err => console.log('_initializeJWT err', err))
+                    .finally(()=> this.authenticated$.next(authenticated));
+            } else {
+                console.log('_initializeJWT authenticated', authenticated);
+                this.authenticated$.next(authenticated)
             }
         });
     }
@@ -90,25 +108,29 @@ export class AuthService {
      * @param jwt The JWT to introspect.
      * @returns The introspection data.
      */
-    private async _introspect(url: string, jwt: string) {
-        console.log('_apiCall url', url);
-       
+    private async _introspect(url: string, jwt: string): Promise<any> {
+        console.log('_introspect url', url);
+
 
         const response = await fetch(url, {
-           headers: {
+            headers: {
                 "Content-Type": "application/json",
                 "x-authorization": jwt
             },
             method: "post",
         });
-        const status = response.status
+        const status = response.status;
         console.log('_introspect status', status);
-        const data =  response.json();
+        if (status !== 200) {
+            console.log('Error status', status);
+            return null;
+        }
+        const data = response.json();
         console.log('_introspect data', data);
         return data;
     }
 
-   
+
 
     login() {
         this._settingsProvider.settings$.pipe(
@@ -136,11 +158,12 @@ export class AuthService {
             const url = settings.baseURL + settings.logoutEndPoint
             console.log('AuthService logout, url', url);
             sessionStorage.removeItem(settings.jwtStorageKey);
-            window.location.href = "https://localhost/cas/logout?service=https://localhost/node-api/cas-auth-callback"
-            
+
+            window.location.href = "https://localhost/cas/oidc/oidcLogout?service=https://localhost/node-api/cas-auth-callback"
+
         })
     }
 
-   
+
 
 }

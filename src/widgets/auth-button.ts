@@ -10,6 +10,7 @@ export class AuthButton extends LitElement {
 
   private _authController = new AuthController(this);
   private _subscription: Subscription | null = null;
+  private _initialized = false;
   private _authenticated = false;
 
   static styles = css`
@@ -36,8 +37,11 @@ export class AuthButton extends LitElement {
     if (!this._subscription) {
       this._subscription = this._authController.authenticated$.pipe(
         tap(authenticated => console.log('AuthButton authenticated ', authenticated)),
-        
-      ).subscribe(authenticated => this.authenticated = authenticated);
+
+      ).subscribe(authenticated => {
+        this.initialized = true;
+        this.authenticated = authenticated;
+      });
     }
   }
 
@@ -49,11 +53,24 @@ export class AuthButton extends LitElement {
     }
   }
 
-  render(): TemplateResult {
+  render() {
+    if (this._initialized) {
+      console.log('AuthButton Render');
+      return this.authenticated ? html`<button @click="${this._onLogout}">logout</button>` : html`<button @click="${this._onLogin}">login</button>`
+    }
+  }
 
-    console.log('AuthButton Render');
-    return this.authenticated ? html`<button @click="${this._onLogout}">logout</button>` : html`<button @click="${this._onLogin}">login</button>`
+  get initialized(): boolean {
+    return this._initialized;
+  }
 
+  set initialized(initialized: boolean) {
+    if (!!initialized != !!this._initialized) {
+      this._initialized = !!initialized;
+      if (this._initialized) {
+        this.requestUpdate();
+      }
+    }
   }
 
   get authenticated(): boolean {
@@ -63,7 +80,7 @@ export class AuthButton extends LitElement {
   set authenticated(authenticated: boolean) {
     if (this._authenticated !== authenticated) {
       this._authenticated = authenticated;
-      this.requestUpdate();
+
     }
   }
 }

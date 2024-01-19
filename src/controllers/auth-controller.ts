@@ -35,7 +35,7 @@ export class AuthController implements ReactiveController {
       get authenticated$(): Observable<boolean> {
         return this.authService.authenticated$;
       }
-      
+
       login(){
         console.log('AuthController login');
         this.authService.login();

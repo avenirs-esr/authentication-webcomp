@@ -37,6 +37,7 @@ export class AuthenticationWebcomp extends LitElement {
   }
 
   render() {
+    
     return html`
        <auth-button></auth-button>
     `;
