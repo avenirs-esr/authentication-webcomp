@@ -142,7 +142,7 @@ export class AuthService {
 
             console.log('AuthService login, url', url);
             //sessionStorage.setItem(settings.jwtStorageKey, 'myToken');
-            window.location.href = "https://localhost/cas/oidc/oidcAuthorize?client_id=APIMClientId&redirect_uri=https://localhost/node-api/cas-auth-callback&response_type=code&scope=openid%20profile"
+            window.location.href = "https://localhost/cas/oidc/oidcAuthorize?client_id=APIMClientId&redirect_uri=https://localhost/node-api/cas-auth-callback&response_type=code&scope=openid%20email%20profile"
             //window.location.href = "https://localhost/cas/oidc/oidcAuthorize?client_id=APIMClientId&redirect_uri=https://localhost:8000/demo&response_type=code&scope=openid%20profile"
             //  localStorage.setItem(settings?.jwtStorageKey, 'true');
             //  this.authenticated$.next(true);
