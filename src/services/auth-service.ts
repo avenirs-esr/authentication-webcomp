@@ -25,11 +25,10 @@ export class AuthService {
     public authenticated$ = new ReplaySubject<boolean>(1)
 
     /** The active jwt  observable. */
-    private jwt$ = new ReplaySubject<string>(1);
+    public jwt$ = new ReplaySubject<string>(1);
 
-
-
-   
+     /** Authentication data */
+     public authenticationData$ = new ReplaySubject<any|null>(1);
 
     /**
      * Singleton constructor.
@@ -56,19 +55,20 @@ export class AuthService {
             // Flag to determine if an invalid jwk has to be removed from storage.
             let cleanStorageFlag = false;
             let jwt = '';
+            let authenticationData: any = null
             if (!onlySessionStorage) {
                 const urlTokens = window.location.href.split('#');
-                console.log('_initializeJWT urlTokens', urlTokens);
+                console.log('AuthService _initializeJWT urlTokens', urlTokens);
                 const newLocation = urlTokens?.[0];
                 if (newLocation !== window.location.href) {
-                    console.log('_initializeJWT newLocation', newLocation);
+                    console.log('AuthService _initializeJWT newLocation', newLocation);
                     history.replaceState({}, '', newLocation);
                 }
                 const urlParams = new URLSearchParams(urlTokens?.[1]);
                 jwt = urlParams.get('access_token') || '';
                 
 
-                console.log('_initializeJWT jwt', jwt);
+                console.log('AuthService _initializeJWT jwt', jwt);
             }
 
             if (!jwt) {
@@ -80,23 +80,35 @@ export class AuthService {
                 // [TODO] Select the host from the one in the location.
                 this._introspect("http://localhost/node-api/cas-auth-validate", jwt)
                     .then(data => {
-                        console.log('_initializeJWT data', data);
+                        console.log('_initializeJWT data', authenticationData);
+                        authenticationData = data?.profile;
+                        console.log('_initializeJWT authenticationData', authenticationData);
                         authenticated = data?.active;
-                        console.log('_initializeJWT data', data);
+                        console.log('_initializeJWT data', authenticationData);
                         
                         console.log('_initializeJWT authenticated', authenticated);
+                       
+                      
+                    })
+                    .catch(err => console.log('AuthService _initializeJWT err', err))
+                    .finally(()=> {
                         if (authenticated) {
                             sessionStorage.setItem(settings.jwtStorageKey, jwt);
-                            this.jwt$.next(jwt);
+                          
                         } else if (cleanStorageFlag) {
                             sessionStorage.removeItem(settings.jwtStorageKey);
                         }
-                    })
-                    .catch(err => console.log('_initializeJWT err', err))
-                    .finally(()=> this.authenticated$.next(authenticated));
+                        this.authenticated$.next(authenticated);
+                        this.jwt$.next(jwt);
+                        console.log('AuthService _initializeJWT authenticationData$ emetting', authenticationData);
+                        this.authenticationData$.next(authenticationData);
+                    });
             } else {
-                console.log('_initializeJWT authenticated', authenticated);
-                this.authenticated$.next(authenticated)
+                console.log('AuthService _initializeJWT authenticated', authenticated);
+                this.authenticated$.next(authenticated);
+                this.jwt$.next('');
+                console.log('AuthService _initializeJWT authenticationData$ emetting null');
+                this.authenticationData$.next(null)
             }
         });
     }

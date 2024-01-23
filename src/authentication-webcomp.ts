@@ -1,4 +1,4 @@
-import { LitElement, html } from 'lit';
+import { LitElement, html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { AuthSettingsProvider } from './services';
 import { AuthSettings } from './settings';
@@ -7,13 +7,14 @@ import './widgets';
 
 @customElement('authentication-webcomp')
 export class AuthenticationWebcomp extends LitElement {
-  // static styles = css`
-  //   :host {
-  //     display: block;
-  //     padding: 25px;
-  //     color: var(--authentication-webcomp-text-color, #000);
-  //   }
-  //   `;
+  static styles = css`
+  
+    .main-container {
+      display:flex;
+      gap: 1em;
+      padding: 1em;
+    }
+    `;
 
 
   /** Settings properties. The changes are propagated via the settings provider in
@@ -24,12 +25,11 @@ export class AuthenticationWebcomp extends LitElement {
       if (newVal === oldVal) {
         return false
       }
-      console.log('hasChanged', newVal);
       new AuthSettingsProvider().update(newVal);
       return true;
     }
   })
-  settings?: AuthSettings
+  settings?: AuthSettings;
 
   constructor() {
     super();
@@ -37,13 +37,12 @@ export class AuthenticationWebcomp extends LitElement {
   }
 
   render() {
-    
-    return html`
-       <auth-button></auth-button>
-    `;
-  }
 
-  settingsChanged() {
-    console.log('authService - settingsChanged ', this.settings);
+    return html`
+    <div class="main-container">
+      <user-profile-panel></user-profile-panel>
+      <auth-button></auth-button>
+    </div>
+    `;
   }
 }

@@ -3,7 +3,10 @@ import { AuthService } from './../services/';
 import { ReactiveController, ReactiveControllerHost } from "lit";
 
 
-
+/**
+ * Authentication controler.
+ * Makes the junction beetween authentication widgets and the authentication service.
+ */
 export class AuthController implements ReactiveController {
     host: ReactiveControllerHost;
     authService: AuthService
@@ -13,9 +16,6 @@ export class AuthController implements ReactiveController {
         (this.host = host).addController(this);
         this.authService = new AuthService();
         console.log('AUTH CONTROLLER');
-        
-        
-
     }
 
     hostConnected() {

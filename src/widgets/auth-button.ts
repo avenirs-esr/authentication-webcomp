@@ -13,13 +13,13 @@ export class AuthButton extends LitElement {
   private _initialized = false;
   private _authenticated = false;
 
-  static styles = css`
-    :host {
-      display: block;
-      padding: 25px;
-      color: var(--authentication-webcomp-text-color, #000);
-    }
-    `;
+  // static styles = css`
+  //   :host {
+  //     display: block;
+  //     padding: 25px;
+  //     color: var(--authentication-webcomp-text-color, #000);
+  //   }
+  //   `;
 
   private _onLogout(): void {
     console.log('AuthButton _onLogout');
