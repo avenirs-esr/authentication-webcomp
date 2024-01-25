@@ -5,6 +5,16 @@ import { customElement } from 'lit/decorators.js';
 import { Subscription, map, tap } from 'rxjs';
 
 
+
+/**
+ * Login / logout button.
+ * @date 25/01/2024 - 16:13:49
+ *
+ * @export {AuthButton}
+ * @class AuthButton
+ * @typedef {AuthButton}
+ * @extends {LitElement}
+ */
 @customElement('auth-button')
 export class AuthButton extends LitElement {
 
@@ -28,11 +38,11 @@ export class AuthButton extends LitElement {
     this._authController.logout();
   }
 
-
   private _onLogin(): void {
     console.log('AuthButton _onLogin');
     this._authController.login();
   }
+
   connectedCallback(): void {
     console.log('AuthButton connectedCallback');
     super.connectedCallback()

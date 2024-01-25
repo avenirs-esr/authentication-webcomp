@@ -33,12 +33,18 @@ export class AuthenticationWebcomp extends LitElement {
 
   constructor() {
     super();
+   
+  
+  
 
   }
 
   render() {
+    console.log('RENDER WEBCOMP')
 
     return html`
+
+  
     <div class="main-container">
       <user-profile-panel></user-profile-panel>
       <auth-button></auth-button>

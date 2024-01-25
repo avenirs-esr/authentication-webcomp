@@ -23,7 +23,7 @@
         "test": "tsc && wtr --coverage",
         "test:watch": "tsc && concurrently -k -r \"tsc --watch --preserveWatchOutput\" \"wtr --watch\"",
         "prepare": "husky install",
-        "package": "dir='package/authentication-webcomp-demo'; tsc && [ -e $dir ] || mkdir -p $dir && cp -R dist/ $dir && cp ./demo/* $dir"
+        "package": "dir='package/authentication-webcomp-demo'; tsc && rollup -c && [ -e $dir ] || mkdir -p $dir && cp -R dist/auth-webcomp-bundled.js $dir && cp ./demo/bundled.html $dir/index.html"
     },
     "dependencies": {
         "lit": "^3.1.1",
@@ -35,9 +35,11 @@
         "@custom-elements-manifest/analyzer": "^0.9.0",
         "@open-wc/eslint-config": "^12.0.3",
         "@open-wc/testing": "^4.0.0",
+        "@rollup/plugin-commonjs": "^25.0.7",
         "@rollup/plugin-json": "^6.1.0",
         "@rollup/plugin-node-resolve": "^15.2.3",
         "@rollup/plugin-terser": "^0.4.4",
+        "@rollup/plugin-typescript": "^11.1.6",
         "@types/mocha": "^10.0.6",
         "@typescript-eslint/eslint-plugin": "^6.19.0",
         "@typescript-eslint/parser": "^6.19.0",

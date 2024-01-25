@@ -1,5 +1,5 @@
 import { AuthSettingsProvider } from './auth-settings-provider';
-import { AuthSettings, DEFAULT_AUTH_SETTINGS } from "../settings";
+import { AuthSettings, DEFAULT_AUTH_SETTINGS, AuthEndPointsSettings } from "../settings";
 import { Observable, ReplaySubject, filter, take } from 'rxjs';
 
 
@@ -150,15 +150,10 @@ export class AuthService {
             filter(settings => !!settings?.jwtStorageKey),
             take(1),
         ).subscribe(settings => {
+            const loginEndPoint = this._fetchEndPoints(settings)?.login;
             console.log('AuthService login, settings', settings);
-            const url = settings.baseURL + settings.loginEndPoint;
-
-            console.log('AuthService login, url', url);
-            //sessionStorage.setItem(settings.jwtStorageKey, 'myToken');
-            window.location.href = `https://${this.backend}/cas/oidc/oidcAuthorize?client_id=APIMClientId&redirect_uri=https://localhost/node-api/cas-auth-callback&response_type=code&scope=openid%20email%20profile`
-            //window.location.href = "https://localhost/cas/oidc/oidcAuthorize?client_id=APIMClientId&redirect_uri=https://localhost:8000/demo&response_type=code&scope=openid%20profile"
-            //  localStorage.setItem(settings?.jwtStorageKey, 'true');
-            //  this.authenticated$.next(true);
+            console.log('AuthService login, loginEndPoint', loginEndPoint);
+            window.location.href =       loginEndPoint;
         });
     }
 
@@ -167,14 +162,26 @@ export class AuthService {
             filter(settings => !!settings.jwtStorageKey),
             take(1),
         ).subscribe(settings => {
-            console.log('AuthService logout');
-            const url = settings.baseURL + settings.logoutEndPoint
-            console.log('AuthService logout, url', url);
+            const logoutEndPoint = this._fetchEndPoints(settings)?.logout;
+            
+            console.log('AuthService logout, settings', settings);
+            console.log('AuthService login, logoutEndPoint', logoutEndPoint);
             sessionStorage.removeItem(settings.jwtStorageKey);
+            window.location.href = logoutEndPoint
+      })
+    }
 
-            window.location.href = `https://${this.backend}/cas/oidc/oidcLogout?service=https://localhost/node-api/cas-auth-callback`
+    _fetchEndPoints(settings: AuthSettings): AuthEndPointsSettings {
+        const hostname = window.location.hostname;
+        if (hostname === 'localhost' || hostname === '127.0.0.1'){
+           return settings?.routes?.local;
+        }
+        if (hostname === 'srv-dev-avenir') {
+            return settings.routes.dev;
+        }
 
-        })
+        return settings?.routes?.prod;
+      
     }
 
     get backend(): string {
