@@ -54,7 +54,7 @@ export class UserProfilePanel extends LitElement {
     console.log('UserProfilePanel Render _initialized', this._initialized);
     if (this._initialized) {
       console.log('UserProfilePanel Render');
-      return   html`<div>${this._userProfile ? this._userProfile.givenName : 'not authenticated'}</div>`
+      return   html`<div>${this._userProfile ? this._userProfile.givenName : 'Not authenticated'}</div>`
      
     }
   }

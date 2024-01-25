@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "target": "es2018",
-    "module": "esnext",
+    "target": "ESNext",
+    "module": "AMD",
     "moduleResolution": "node",
     "noEmitOnError": true,
     "lib": ["es2017", "dom"],
@@ -11,11 +11,12 @@
     "experimentalDecorators": true,
     "importHelpers": true,
     "outDir": "dist",
+    "outFile": "out.js",
     "sourceMap": true,
     "inlineSources": true,
     "rootDir": "./",
     "declaration": true,
     "incremental": true
   },
-  "include": ["**/*.ts", "src/authentication-webcomp_ts"]
+  "include": ["**/*.ts"]
 }

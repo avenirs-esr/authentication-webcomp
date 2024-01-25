@@ -27,8 +27,8 @@ export class AuthService {
     /** The active jwt  observable. */
     public jwt$ = new ReplaySubject<string>(1);
 
-     /** Authentication data */
-     public authenticationData$ = new ReplaySubject<any|null>(1);
+    /** Authentication data */
+    public authenticationData$ = new ReplaySubject<any | null>(1);
 
     /**
      * Singleton constructor.
@@ -66,7 +66,7 @@ export class AuthService {
                 }
                 const urlParams = new URLSearchParams(urlTokens?.[1]);
                 jwt = urlParams.get('access_token') || '';
-                
+
 
                 console.log('AuthService _initializeJWT jwt', jwt);
             }
@@ -76,25 +76,25 @@ export class AuthService {
                 cleanStorageFlag = true; // If the jwt is not valid it has to be removed from session storage.
             }
             if (jwt) {
-                
-                // [TODO] Select the host from the one in the location.
-                this._introspect("http://localhost/node-api/cas-auth-validate", jwt)
+
+                const validationEndpoint = `http://${this.backend}/node-api/cas-auth-validate`;
+                this._introspect(validationEndpoint, jwt)
                     .then(data => {
                         console.log('_initializeJWT data', authenticationData);
                         authenticationData = data?.profile;
                         console.log('_initializeJWT authenticationData', authenticationData);
                         authenticated = data?.active;
                         console.log('_initializeJWT data', authenticationData);
-                        
+
                         console.log('_initializeJWT authenticated', authenticated);
-                       
-                      
+
+
                     })
                     .catch(err => console.log('AuthService _initializeJWT err', err))
-                    .finally(()=> {
+                    .finally(() => {
                         if (authenticated) {
                             sessionStorage.setItem(settings.jwtStorageKey, jwt);
-                          
+
                         } else if (cleanStorageFlag) {
                             sessionStorage.removeItem(settings.jwtStorageKey);
                         }
@@ -112,6 +112,7 @@ export class AuthService {
             }
         });
     }
+
 
 
     /**
@@ -154,7 +155,7 @@ export class AuthService {
 
             console.log('AuthService login, url', url);
             //sessionStorage.setItem(settings.jwtStorageKey, 'myToken');
-            window.location.href = "https://localhost/cas/oidc/oidcAuthorize?client_id=APIMClientId&redirect_uri=https://localhost/node-api/cas-auth-callback&response_type=code&scope=openid%20email%20profile"
+            window.location.href = `https://${this.backend}/cas/oidc/oidcAuthorize?client_id=APIMClientId&redirect_uri=https://localhost/node-api/cas-auth-callback&response_type=code&scope=openid%20email%20profile`
             //window.location.href = "https://localhost/cas/oidc/oidcAuthorize?client_id=APIMClientId&redirect_uri=https://localhost:8000/demo&response_type=code&scope=openid%20profile"
             //  localStorage.setItem(settings?.jwtStorageKey, 'true');
             //  this.authenticated$.next(true);
@@ -171,9 +172,14 @@ export class AuthService {
             console.log('AuthService logout, url', url);
             sessionStorage.removeItem(settings.jwtStorageKey);
 
-            window.location.href = "https://localhost/cas/oidc/oidcLogout?service=https://localhost/node-api/cas-auth-callback"
+            window.location.href = `https://${this.backend}/cas/oidc/oidcLogout?service=https://localhost/node-api/cas-auth-callback`
 
         })
+    }
+
+    get backend(): string {
+        const hostname = window.location.hostname;
+        return hostname === 'localhost' ? 'localhost' : 'avenirs-apache';
     }
 
 

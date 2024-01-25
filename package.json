@@ -1,95 +1,105 @@
 {
-  "name": "authentication-webcomp",
-  "description": "Webcomponent authentication-webcomp following open-wc recommendations",
-  "license": "MIT",
-  "author": "authentication-webcomp",
-  "version": "0.0.0",
-  "main": "dist/src/index.js",
-  "module": "dist/src/index.js",
-  "exports": {
-    ".": "./dist/src/index.js",
-    "./authentication-webcomp.js": "./dist/src/authentication-webcomp.js"
-  },
-  "scripts": {
-    "analyze": "cem analyze --litelement",
-    "start": "tsc && concurrently -k -r \"tsc --watch --preserveWatchOutput\" \"wds\"",
-    "build": "tsc && npm run analyze -- --exclude dist",
-    "prepublish": "tsc && npm run analyze -- --exclude dist",
-    "lint": "eslint --ext .ts,.html . --ignore-path .gitignore && prettier \"**/*.ts\" --check --ignore-path .gitignore",
-    "format": "eslint --ext .ts,.html . --fix --ignore-path .gitignore && prettier \"**/*.ts\" --write --ignore-path .gitignore",
-    "test": "tsc && wtr --coverage",
-    "test:watch": "tsc && concurrently -k -r \"tsc --watch --preserveWatchOutput\" \"wtr --watch\"",
-    "prepare": "husky install",
-    "package": "dir='package/authentication-webcomp-demo'; [ -e $dir ] || mkdir -p $dir && cp -R dist/ $dir && cp ./demo/* $dir"
-  },
-  "dependencies": {
-    "lit": "^3.1.1",
-    "rxjs": "^7.8.1"
-  },
-  "devDependencies": {
-    "@commitlint/cli": "^18.4.4",
-    "@commitlint/config-conventional": "^18.4.4",
-    "@custom-elements-manifest/analyzer": "^0.9.0",
-    "@open-wc/eslint-config": "^12.0.3",
-    "@open-wc/testing": "^4.0.0",
-    "@types/mocha": "^10.0.6",
-    "@typescript-eslint/eslint-plugin": "^6.19.0",
-    "@typescript-eslint/parser": "^6.19.0",
-    "@web/dev-server": "^0.4.1",
-    "@web/test-runner": "^0.18.0",
-    "concurrently": "^8.2.2",
-    "eslint": "^8.56.0",
-    "eslint-config-prettier": "^9.1.0",
-    "husky": "^8.0.0",
-    "lint-staged": "^15.2.0",
-    "prettier": "^3.2.2",
-    "tslib": "^2.6.2",
-    "typescript": "^5.3.3"
-  },
-  "customElements": "custom-elements.json",
-  "eslintConfig": {
-    "import/resolver": {
-      "typescript": {}
+    "name": "authentication-webcomp",
+    "description": "Webcomponent authentication-webcomp following open-wc recommendations",
+    "license": "MIT",
+    "author": "authentication-webcomp",
+    "version": "0.0.0",
+    "main": "dist/src/index.js",
+    "type": "module",
+    "types": "dist/src/index.d.ts",
+    "module": "dist/src/index.js",
+    "exports": {
+        ".": "./dist/src/index.js",
+        "./authentication-webcomp.js": "./dist/src/authentication-webcomp.js"
     },
-    "parser": "@typescript-eslint/parser",
-    "extends": [
-      "@open-wc",
-      "prettier"
-    ],
-    "plugins": [
-      "@typescript-eslint"
-    ],
-    "rules": {
-      "no-unused-vars": "off",
-      "lit/no-classfield-shadowing": "off",
-      "@typescript-eslint/no-unused-vars": [
-        "error"
-      ],
-      "import/no-unresolved": [
-        "error"
-      ],
-      "import/extensions": [
-        "error",
-        "never",
-        {
-          "ignorePackages": true
+    "scripts": {
+        "analyze": "cem analyze --litelement",
+        "start": "tsc && concurrently -k -r \"tsc --watch --preserveWatchOutput\" \"wds\"",
+        "build": "tsc",
+        "_off__build": "tsc && npm run analyze -- --exclude dist",
+        "prepublish": "tsc && npm run analyze -- --exclude dist",
+        "lint": "eslint --ext .ts,.html . --ignore-path .gitignore && prettier \"**/*.ts\" --check --ignore-path .gitignore",
+        "format": "eslint --ext .ts,.html . --fix --ignore-path .gitignore && prettier \"**/*.ts\" --write --ignore-path .gitignore",
+        "test": "tsc && wtr --coverage",
+        "test:watch": "tsc && concurrently -k -r \"tsc --watch --preserveWatchOutput\" \"wtr --watch\"",
+        "prepare": "husky install",
+        "package": "dir='package/authentication-webcomp-demo'; tsc && [ -e $dir ] || mkdir -p $dir && cp -R dist/ $dir && cp ./demo/* $dir"
+    },
+    "dependencies": {
+        "lit": "^3.1.1",
+        "rxjs": "^7.8.1"
+    },
+    "devDependencies": {
+        "@commitlint/cli": "^18.4.4",
+        "@commitlint/config-conventional": "^18.4.4",
+        "@custom-elements-manifest/analyzer": "^0.9.0",
+        "@open-wc/eslint-config": "^12.0.3",
+        "@open-wc/testing": "^4.0.0",
+        "@rollup/plugin-json": "^6.1.0",
+        "@rollup/plugin-node-resolve": "^15.2.3",
+        "@rollup/plugin-terser": "^0.4.4",
+        "@types/mocha": "^10.0.6",
+        "@typescript-eslint/eslint-plugin": "^6.19.0",
+        "@typescript-eslint/parser": "^6.19.0",
+        "@web/dev-server": "^0.4.1",
+        "@web/rollup-plugin-copy": "^0.5.1",
+        "@web/rollup-plugin-html": "^2.1.2",
+        "@web/test-runner": "^0.18.0",
+        "concurrently": "^8.2.2",
+        "eslint": "^8.56.0",
+        "eslint-config-prettier": "^9.1.0",
+        "husky": "^8.0.0",
+        "lint-staged": "^15.2.0",
+        "prettier": "^3.2.2",
+        "rollup": "^4.9.6",
+        "rollup-plugin-node-resolve": "^5.2.0",
+        "tslib": "^2.6.2",
+        "typescript": "^5.3.3"
+    },
+    "customElements": "custom-elements.json",
+    "eslintConfig": {
+        "import/resolver": {
+            "typescript": {}
+        },
+        "parser": "@typescript-eslint/parser",
+        "extends": [
+            "@open-wc",
+            "prettier"
+        ],
+        "plugins": [
+            "@typescript-eslint"
+        ],
+        "rules": {
+            "no-unused-vars": "off",
+            "lit/no-classfield-shadowing": "off",
+            "@typescript-eslint/no-unused-vars": [
+                "error"
+            ],
+            "import/no-unresolved": [
+                "error"
+            ],
+            "import/extensions": [
+                "error",
+                "never",
+                {
+                    "ignorePackages": true
+                }
+            ]
         }
-      ]
+    },
+    "prettier": {
+        "singleQuote": true,
+        "arrowParens": "avoid"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
+    },
+    "lint-staged": {
+        "*.ts": [
+            "eslint --fix",
+            "prettier --write"
+        ]
     }
-  },
-  "prettier": {
-    "singleQuote": true,
-    "arrowParens": "avoid"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "*.ts": [
-      "eslint --fix",
-      "prettier --write"
-    ]
-  }
 }
