@@ -23,7 +23,7 @@
         "test": "tsc && wtr --coverage",
         "test:watch": "tsc && concurrently -k -r \"tsc --watch --preserveWatchOutput\" \"wtr --watch\"",
         "prepare": "husky install",
-        "package": "dir='package/authentication-webcomp-demo'; tsc && rollup -c && [ -e $dir ] || mkdir -p $dir && cp -R dist/auth-webcomp-bundled.js $dir && cp ./demo/bundled.html $dir/index.html"
+        "package": "dir='package/authentication-webcomp-demo'; tsc && rollup -c && [ -e $dir ] || mkdir -p $dir && mv dist/auth-webcomp-bundled.js $dir && cp ./demo/index.bundled.html $dir/index.html"
     },
     "dependencies": {
         "lit": "^3.1.1",
