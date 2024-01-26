@@ -77,7 +77,7 @@ export class AuthService {
             }
             if (jwt) {
 
-                const validationEndpoint = `http://${this.backend}/node-api/cas-auth-validate`;
+                const validationEndpoint = this._fetchEndPoints(settings)?.validation;
                 this._introspect(validationEndpoint, jwt)
                     .then(data => {
                         console.log('_initializeJWT data', authenticationData);
@@ -184,10 +184,6 @@ export class AuthService {
       
     }
 
-    get backend(): string {
-        const hostname = window.location.hostname;
-        return hostname === 'localhost' ? 'localhost' : 'avenirs-apache';
-    }
 
 
 

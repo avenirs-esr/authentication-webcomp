@@ -10,5 +10,6 @@ export interface AuthEndPointsSettings  {
 
     login: string;
     logout: string;
+    validation: string;
    
 }
