@@ -1,4 +1,4 @@
-import { AuthSettingsProvider } from './auth-settings-provider';
+import { AuthSettingsService } from './auth-settings-service';
 import { AuthSettings, DEFAULT_AUTH_SETTINGS, AuthEndPointsSettings } from "../settings";
 import { Observable, ReplaySubject, filter, take } from 'rxjs';
 
@@ -18,8 +18,8 @@ export class AuthService {
     /** Singleton instance. */
     private static _INSTANCE: AuthService;
 
-    /** Authentication settings. */
-    private _settingsProvider = new AuthSettingsProvider();
+    /** Authentication settings service. */
+    private _settingsService = new AuthSettingsService();
 
     /** Authenticated status observable. */
     public authenticated$ = new ReplaySubject<boolean>(1)
@@ -47,7 +47,7 @@ export class AuthService {
      * @param onlySessionStorage Flag to determine if the JWT can be retrieved from the location.
      */
     private _initializeJWT(onlySessionStorage = false) {
-        this._settingsProvider.settings$.pipe(
+        this._settingsService.settings$.pipe(
             filter(settings => !!settings?.jwtStorageKey),
             take(1)
         ).subscribe(settings => {
@@ -146,7 +146,7 @@ export class AuthService {
 
 
     login() {
-        this._settingsProvider.settings$.pipe(
+        this._settingsService.settings$.pipe(
             filter(settings => !!settings?.jwtStorageKey),
             take(1),
         ).subscribe(settings => {
@@ -158,7 +158,7 @@ export class AuthService {
     }
 
     logout() {
-        this._settingsProvider.settings$.pipe(
+        this._settingsService.settings$.pipe(
             filter(settings => !!settings.jwtStorageKey),
             take(1),
         ).subscribe(settings => {
