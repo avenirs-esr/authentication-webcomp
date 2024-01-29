@@ -1,6 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import { AuthSettingsProvider } from './services';
+import { AuthSettingsService } from './services';
 import { AuthSettings } from './settings';
 import './widgets';
 
@@ -25,7 +25,7 @@ export class AuthenticationWebcomp extends LitElement {
       if (newVal === oldVal) {
         return false
       }
-      new AuthSettingsProvider().update(newVal);
+      new AuthSettingsService().update(newVal);
       return true;
     }
   })
@@ -40,11 +40,7 @@ export class AuthenticationWebcomp extends LitElement {
   }
 
   render() {
-    console.log('RENDER WEBCOMP')
-
     return html`
-
-  
     <div class="main-container">
       <user-profile-panel></user-profile-panel>
       <auth-button></auth-button>

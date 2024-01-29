@@ -26,7 +26,7 @@ export class AuthButton extends LitElement {
   static styles = css`
     :host {
       display: block;
-      color: var(--authentication-webcomp-text-color, #000);
+      color: var(--auth-button-text-color, #000);
     }
     button {
       cursor: pointer;
@@ -59,6 +59,7 @@ export class AuthButton extends LitElement {
 
   disconnectedCallback(): void {
     console.log('AuthButton disconnectedCallback');
+    super.disconnectedCallback();
     if (this._subscription) {
       this._subscription.unsubscribe();
       this._subscription = null;
