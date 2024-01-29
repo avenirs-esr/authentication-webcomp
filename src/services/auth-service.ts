@@ -30,6 +30,9 @@ export class AuthService {
     /** Authentication data */
     public authenticationData$ = new ReplaySubject<any | null>(1);
 
+    /** Flag to determine if the authentication service is initialized, i.e.: the authenticatio nstatus is known.  */
+    public authenticationStatusKnown = false;
+
     /**
      * Singleton constructor.
      * @returns the unique instance of this class. 
@@ -40,6 +43,10 @@ export class AuthService {
             AuthService._INSTANCE = this;
         }
         return AuthService._INSTANCE;
+    }
+    private _initializeJWT_(onlySessionStorage = false) {
+        setTimeout(()=> this.authenticated$.next(true),2000)
+        setTimeout(()=> this.authenticated$.next(false), 5000)
     }
 
     /**
@@ -58,7 +65,7 @@ export class AuthService {
             let authenticationData: any = null
             if (!onlySessionStorage) {
                 const urlTokens = window.location.href.split('#');
-                console.log('AuthService _initializeJWT urlTokens', urlTokens);
+                console.log('ObserveDirective AuthService _initializeJWT urlTokens', urlTokens);
                 const newLocation = urlTokens?.[0];
                 if (newLocation !== window.location.href) {
                     console.log('AuthService _initializeJWT newLocation', newLocation);
@@ -98,16 +105,19 @@ export class AuthService {
                         } else if (cleanStorageFlag) {
                             sessionStorage.removeItem(settings.jwtStorageKey);
                         }
+                        console.log('ObserveDirective AuthService _initializeJWT authenticated$ emetting', authenticated);
                         this.authenticated$.next(authenticated);
                         this.jwt$.next(jwt);
-                        console.log('AuthService _initializeJWT authenticationData$ emetting', authenticationData);
+                        console.log('ObserveDirective AuthService _initializeJWT authenticationData$ emetting', authenticationData);
+                        this.authenticationStatusKnown = true;
                         this.authenticationData$.next(authenticationData);
                     });
             } else {
-                console.log('AuthService _initializeJWT authenticated', authenticated);
+                console.log('ObserveDirective AuthService _initializeJWT (no jwt) authenticated$ emetting', authenticated);
                 this.authenticated$.next(authenticated);
                 this.jwt$.next('');
                 console.log('AuthService _initializeJWT authenticationData$ emetting null');
+                this.authenticationStatusKnown = true;
                 this.authenticationData$.next(null)
             }
         });
