@@ -3,12 +3,6 @@
 
 <head>
   <meta charset="utf-8">
-  <!-- <script src="https://requirejs.org/docs/release/2.3.6/comments/require.js"></script> -->
-  <!-- <script src="/node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script> -->
-  <!-- <script src="/node_modules/lit/polyfill-support.js"></script> -->
-  <!-- <script type="module" src="bundle.js"></script>
-  <script type="module" src="my-element.bundled.js"></script> -->
-  
   <style>
     html {
       width: 100%;
@@ -23,6 +17,7 @@
       width: 100%;
       height: 100%;
     }
+
     h1 {
       color: 0a71b4;
       font-family: sans-serif;
@@ -49,31 +44,28 @@
   <div class="main-container">
     <h1>Avenirs - Authentication webcomponent </h1>
     <p>
-     Webcomponent for OIDC authentication and JWT management.
+      Webcomponent for OIDC authentication and JWT management.
     </p>
     <p>
-      GitHub repository: <a href="https://github.com/avenirs-esr/authentication-webcomp" target="_blank">authentication-webcomp</a>.
-     </p>
+      GitHub repository: <a href="https://github.com/avenirs-esr/authentication-webcomp"
+        target="_blank">authentication-webcomp</a>.
+    </p>
     <div id="auth" class="demo-container">
       <div class="component-container">
-        <my-element></my-element>
-        
+
+
         <script type="module">
-          // import {LitElement, html, render} from 'https://cdn.jsdelivr.net/gh/lit/dist@3/core/lit-core.min.js';
-          //  import { html, render } from 'lit';
-          //  import '../dist/src/';
-          // import { DEFAULT_AUTH_SETTINGS } from '../dist/src/settings/default-auth-settings.js'
-          import { DEFAULT_AUTH_SETTINGS, html, render } from './bundle.js'
+          import { html, render } from 'lit';
+          import '../dist/src/';
+          import { DEFAULT_AUTH_SETTINGS } from '../dist/src/settings/default-auth-settings.js'
 
 
           render(
-
             html`
-      
-        <authentication-webcomp .settings=${DEFAULT_AUTH_SETTINGS}>
-          Javascript is required for WebComponents
-        </authentication-webcomp>
-        
+            <authentication-webcomp .settings=${DEFAULT_AUTH_SETTINGS}>
+             Javascript is required for WebComponents
+            </authentication-webcomp>
+            <query-tester></query-tester>
       `,
             document.querySelector('#auth')
           );
