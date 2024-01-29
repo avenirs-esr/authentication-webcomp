@@ -9,7 +9,7 @@ import { Observable, ReplaySubject, filter, take } from 'rxjs';
     * 1. Try to retrieve the jwt from the URL.
     *       * If found: it is registered in the session storage.
     *       * If not found: try to find it in session storage.
-    * 2. Iff there is a jwt it is validated.
+    * 2. If there is a jwt it is validated.
     * 3. If there is a valid jwt, the user is authenticated.
     * 4. If not redirect to the oidc provider to retrieve a jwt.
     */
@@ -77,7 +77,7 @@ export class AuthService {
             }
             if (jwt) {
 
-                const validationEndpoint = this._fetchEndPoints(settings)?.validation;
+                const validationEndpoint = this._settingsService.selectEndPointsForHost(settings,  window.location.hostname)?.validation;
                 this._introspect(validationEndpoint, jwt)
                     .then(data => {
                         console.log('_initializeJWT data', authenticationData);
@@ -141,7 +141,6 @@ export class AuthService {
         return data;
     }
 
-
     /**
      * Performs the login action.
      */
@@ -150,7 +149,7 @@ export class AuthService {
             filter(settings => !!settings?.jwtStorageKey),
             take(1),
         ).subscribe(settings => {
-            const loginEndPoint = this._fetchEndPoints(settings)?.login;
+            const loginEndPoint = this._settingsService.selectEndPointsForHost(settings,  window.location.hostname)?.login;
             console.log('AuthService login, settings', settings);
             console.log('AuthService login, loginEndPoint', loginEndPoint);
             window.location.href = loginEndPoint;
@@ -165,26 +164,10 @@ export class AuthService {
             filter(settings => !!settings.jwtStorageKey),
             take(1),
         ).subscribe(settings => {
-            const logoutEndPoint = this._fetchEndPoints(settings)?.logout;
-            
-            console.log('AuthService logout, settings', settings);
+            const logoutEndPoint = this._settingsService.selectEndPointsForHost(settings,  window.location.hostname)?.logout;
             console.log('AuthService login, logoutEndPoint', logoutEndPoint);
             sessionStorage.removeItem(settings.jwtStorageKey);
             window.location.href = logoutEndPoint
       })
     }
-
-    /**
-     * Fetches the endpoint based on the hostname in the window's location.
-     * @param settings The current instance of settins.
-     * @returns The end points to use.
-     */
-    private _fetchEndPoints(settings: AuthSettings): AuthEndPointsSettings {
-        const hostname = window.location.hostname;
-        return this._settingsService.selectEndPointsForHost(settings, hostname);
-    }
-
-
-
-
 }
