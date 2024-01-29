@@ -43,7 +43,7 @@ export class AuthService {
     }
 
     /**
-     * Trye to fectch a JWT.
+     * Try to fetch a JWT.
      * @param onlySessionStorage Flag to determine if the JWT can be retrieved from the location.
      */
     private _initializeJWT(onlySessionStorage = false) {
@@ -113,8 +113,6 @@ export class AuthService {
         });
     }
 
-
-
     /**
      * Introspects a JWT.
      * @param url The introspection end point.
@@ -144,7 +142,9 @@ export class AuthService {
     }
 
 
-
+    /**
+     * Performs the login action.
+     */
     login() {
         this._settingsService.settings$.pipe(
             filter(settings => !!settings?.jwtStorageKey),
@@ -153,10 +153,13 @@ export class AuthService {
             const loginEndPoint = this._fetchEndPoints(settings)?.login;
             console.log('AuthService login, settings', settings);
             console.log('AuthService login, loginEndPoint', loginEndPoint);
-            window.location.href =       loginEndPoint;
+            window.location.href = loginEndPoint;
         });
     }
 
+     /**
+     * Performs the logout action.
+     */
     logout() {
         this._settingsService.settings$.pipe(
             filter(settings => !!settings.jwtStorageKey),
@@ -171,18 +174,14 @@ export class AuthService {
       })
     }
 
-    _fetchEndPoints(settings: AuthSettings): AuthEndPointsSettings {
+    /**
+     * Fetches the endpoint based on the hostname in the window's location.
+     * @param settings The current instance of settins.
+     * @returns The end points to use.
+     */
+    private _fetchEndPoints(settings: AuthSettings): AuthEndPointsSettings {
         const hostname = window.location.hostname;
-        console.log('AuthService _fetchEndPoints hostname', hostname);
-        if (hostname === 'localhost' || hostname === '127.0.0.1'){
-           return settings?.routes?.local;
-        }
-        if (hostname.includes('srv-dev-avenir')) {
-            return settings.routes.dev;
-        }
-
-        return settings?.routes?.prod;
-      
+        return this._settingsService.selectEndPointsForHost(settings, hostname);
     }
 
 
