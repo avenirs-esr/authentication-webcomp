@@ -1,48 +1,82 @@
-import { Observable } from 'rxjs';
-import { AuthService } from './../services/';
 import { ReactiveController, ReactiveControllerHost } from "lit";
+import { Observable } from 'rxjs';
+import { LoggingManager } from '../logging';
+import { NoopLogger } from '../logging';
+import { AuthService } from './../services/';
 
 
 /**
- * Authentication controler.
- * Makes the junction beetween authentication widgets and the authentication service.
+ * Authentication controller. 
+ * Makes the junction between the ui component and the service.
+ * @date 01/02/2024 - 16:08:48
+ * @author A. Deman
+ *
+ * @export
+ * @class AuthController
+ * @typedef {AuthController}
+ * @implements {ReactiveController}
  */
 export class AuthController implements ReactiveController {
+  
+  /** Logger associated to this class. */
+  private _logger = new NoopLogger();
+
+  /** The host connected to this controller. */
   host: ReactiveControllerHost;
-  authService: AuthService
 
+  /** Authentication service. */
+  authService: AuthService;
 
+  /**
+   * Creates an instance of AuthController.
+   * @date 01/02/2024 - 15:43:10
+   *
+   * @constructor
+   * @param {ReactiveControllerHost} host The host connected this controller.
+   */
   constructor(host: ReactiveControllerHost) {
     (this.host = host).addController(this);
     this.authService = new AuthService();
-    console.log('AUTH CONTROLLER');
+
+    this._logger = new LoggingManager().getLogger('AuthController')
+    
+    
   }
 
   hostConnected() {
-    // Start a timer when the host is connected
-    // this._timerID = setInterval(() => {
-    //   this.value = new Date();
-    //   // Update the host with new value
-    //  this.host.requestUpdate();
-    // }, this.timeout);
-  }
-  hostDisconnected() {
-    // Clear the timer when the host is disconnected
-    // clearInterval(this._timerID);
-    // this._timerID = undefined;
   }
 
+  hostDisconnected() {
+  }
+
+  
+  /**
+   * Observable of authentication state.
+   * @date 01/02/2024 - 15:43:56
+   *
+   * @readonly
+   * @type {Observable<boolean>}
+   */
   get authenticated$(): Observable<boolean> {
     return this.authService.authenticated$;
   }
-
+  
+  /**
+   * Login action.
+   * @date 01/02/2024 - 15:44:18
+   */
   login() {
-    console.log('AuthController login');
+    this._logger.debug('login');
     this.authService.login();
   }
 
+  
+  /**
+   * Logout action.
+   * @date 01/02/2024 - 16:03:53
+   */
   logout() {
-    console.log('AuthController logout');
+    this._logger.debug('logout');
     this.authService.logout();
   }
 

@@ -3,18 +3,20 @@ import { AuthController, TestQueryController, TestQueryResultDisplayerHost } fro
 import { html, css, LitElement, TemplateResult } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { Subscription, map, tap } from 'rxjs';
-import {observe} from '../directives';
+import {rxDisable} from '../directives';
 import {asyncReplace} from 'lit/directives/async-replace.js';
+import { DirectiveResult } from 'lit/async-directive';
 
 
 
 /**
  * Query tester to check oidc integration.
  * @date 29/01/2024 - 14:07:04
+ * @author A. Deman.
  *
  * @export {QueryTester}
  * @class QueryTester
- * @typedef {QueryTester}
+ * @type {QueryTester}
  * @extends {LitElement}
  */
 @customElement('query-tester')
@@ -26,16 +28,6 @@ export class QueryTester extends LitElement implements TestQueryResultDisplayerH
   /** The response data of the lat test query. */
   private _responseData: any | null;
 
-  /** A subscription to the authenticated status. */
-  //private _subscription: Subscription | null = null;
-
-  /** Flag for the initialization. */
-  // private _initialized = false;
-
-  // /** Authentication flag. */
-  // private _authenticated = false;
-
-  private _auth = false;
   static styles = css`
     :host {
       display: block;
@@ -63,7 +55,7 @@ export class QueryTester extends LitElement implements TestQueryResultDisplayerH
   }
 
   /**
-   * Notificatio for a new test query result.
+   * Notification for a new test query result.
    * @param data The response data to handle.
    */
   notifyTestQueryResponse(data: any): void {
@@ -75,40 +67,23 @@ export class QueryTester extends LitElement implements TestQueryResultDisplayerH
   connectedCallback(): void {
     console.log('QueryTester connectedCallback');
     super.connectedCallback()
-    this._testQueryController.authenticated$.pipe(
-          tap(authenticated => console.log('QueryTester authenticated ', authenticated)),
-  
-        ).subscribe(authenticated => {
-          this._auth = authenticated;
-        });
-      
-    // if (!this._subscription) {
-    //   this._subscription = this._testQueryController.authenticated$.pipe(
-    //     tap(authenticated => console.log('QueryTester authenticated ', authenticated)),
-
-    //   ).subscribe(authenticated => {
-    //     this.initialized = true;
-    //     this.authenticated = authenticated;
-    //   });
-    // }
+    
   }
 
 
   disconnectedCallback(): void {
     console.log('QueryTester disconnectedCallback');
     super.disconnectedCallback();
-    //   if(this._subscription) {
-    //   this._subscription.unsubscribe();
-    //   this._subscription = null;
-    // }
+  
   }
 
-  render(): TemplateResult<1> {
+   render() {
 
     console.log('ObserveDirective QueryTester Render');
+    
     const queryFragment = html`
       <div>
-        <button @click="${this._onTestAuthenticatedQuery}" ?disabled="${!observe(this._testQueryController.authenticated$)}" >Test query with jwt</button>
+        <button @click="${this._onTestAuthenticatedQuery}"  ${rxDisable(this._testQueryController.authenticated$, true)} >Test query with jwt</button>
         <button @click="${this._onTestUnauthenticatedQuery}">Test query without jwt</button>
       </div>`;
     const responseFragment = this._responseData ? html`
@@ -119,8 +94,7 @@ export class QueryTester extends LitElement implements TestQueryResultDisplayerH
 
     return html`
      <br/>
-     value: ${observe(this._testQueryController.authenticated$)}<br/>
-     v2 = ${this._auth}
+      
      <br/>
       ${queryFragment}
       <!-- <div>
@@ -130,7 +104,7 @@ export class QueryTester extends LitElement implements TestQueryResultDisplayerH
       </div> -->
      ${responseFragment}
      <br/>
-     value: ${observe(this._testQueryController.authenticated$)} => ${!observe(this._testQueryController.authenticated$)}<br/>
+     
         `
 
   }

@@ -6,15 +6,30 @@ import { customElement } from 'lit/decorators.js';
 import { Subscription, map, tap } from 'rxjs';
 
 
+
 /**
- * Displays the user login.
+ * Display the user information.
+ * @date 01/02/2024 - 16:46:26
+ * @author A. Deman
+ *
+ * @export
+ * @class UserProfilePanel
+ * @typedef {UserProfilePanel}
+ * @extends {LitElement}
  */
 @customElement('user-profile-panel')
 export class UserProfilePanel extends LitElement {
 
+  /** Controller associated to this UI component. */
   private _userProfileController = new UserProfileController(this);
+
+  /** Subscription to the user profile observable. */
   private _subscription: Subscription | null = null;
+
+  /** Initialization flag. */
   private _initialized = false;
+
+  /** User profile instance. */
   private _userProfile: UserProfile | null = null;
 
   static styles = css`
@@ -25,6 +40,11 @@ export class UserProfilePanel extends LitElement {
   `;
 
 
+  
+  /**
+   * Lit connected callback
+   * @date 01/02/2024 - 16:49:10
+   */
   connectedCallback(): void {
     console.log('UserProfilePanel connectedCallback');
     super.connectedCallback()
@@ -42,6 +62,10 @@ export class UserProfilePanel extends LitElement {
     }
   }
 
+  /**
+   * Lit disconnected callback.
+   * @date 01/02/2024 - 16:49:28
+   */
   disconnectedCallback(): void {
     console.log('UserProfilePanel disconnectedCallback');
     if (this._subscription) {
@@ -50,6 +74,13 @@ export class UserProfilePanel extends LitElement {
     }
   }
 
+
+  /**
+   * Lit render method.
+   * @date 01/02/2024 - 16:49:57
+   *
+   * @returns {*}
+   */
   render() {
     console.log('UserProfilePanel Render _initialized', this._initialized);
     if (this._initialized) {
@@ -59,7 +90,8 @@ export class UserProfilePanel extends LitElement {
     }
   }
 
-  get initialized(): boolean {
+  
+ get initialized(): boolean {
     return this._initialized;
   }
 

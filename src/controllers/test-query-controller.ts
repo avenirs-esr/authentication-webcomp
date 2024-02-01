@@ -2,8 +2,15 @@ import { Observable, Subscription, distinctUntilChanged } from 'rxjs';
 import { AuthService, TestQueryService } from '../services';
 import { ReactiveController, ReactiveControllerHost } from "lit";
 
+
 /**
- * Interface for the widget used to display the result of the test query.
+ * Interface for the displayer for a test query result.
+ * @date 01/02/2024 - 16:06:08
+ * @author A. Deman
+ * 
+ * @export {TestQueryResultDisplayerHost}
+ * @interface TestQueryResultDisplayerHost
+ * @type {TestQueryResultDisplayerHost}
  */
 export interface TestQueryResultDisplayerHost {
 
@@ -19,6 +26,17 @@ export interface TestQueryResultDisplayerHost {
 /**
  * Test query controler.
  * Used to check the oidc integration.
+ */
+
+/**
+ * Description placeholder
+ * @date 01/02/2024 - 16:07:29
+ * @author A. Deman
+ *
+ * @export
+ * @class TestQueryController
+ * @type {TestQueryController}
+ * @implements {ReactiveController}
  */
 export class TestQueryController implements ReactiveController {
 

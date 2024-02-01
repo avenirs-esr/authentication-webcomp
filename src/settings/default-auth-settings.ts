@@ -1,8 +1,13 @@
+import { DEFAULT_LOGGING_SETTINGS, LogLevel } from '../logging';
 import { AuthSettings } from './auth-settings';
 
 /**
  * Default settings for the authentication.
  * storage key for the jwt and end points: login, logout, etc.
+ * @date 01/02/2024 - 16:41:21
+ * @author A. Deman.
+ *
+ * @type {AuthSettings}
  */
 export const DEFAULT_AUTH_SETTINGS: AuthSettings = {
     jwtStorageKey : 'avenirs-jwt',
@@ -24,5 +29,12 @@ export const DEFAULT_AUTH_SETTINGS: AuthSettings = {
             logout: '',
             validation:''
         },
+    },
+    logging: {
+        ...DEFAULT_LOGGING_SETTINGS,
+        levels: {
+            ...DEFAULT_LOGGING_SETTINGS.levels,
+            default: LogLevel.trace
+        }
     }
 }

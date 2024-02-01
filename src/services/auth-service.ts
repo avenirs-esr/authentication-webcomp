@@ -1,18 +1,24 @@
+import { ReplaySubject, filter, take } from 'rxjs';
 import { AuthSettingsService } from './auth-settings-service';
-import { AuthSettings, DEFAULT_AUTH_SETTINGS, AuthEndPointsSettings } from "../settings";
-import { Observable, ReplaySubject, filter, take } from 'rxjs';
-
+import { LoggingManager } from '../logging';
+import { NoopLogger } from '../logging/loggers/noop-logger';
 
 /**
-    * Authentication service. 
-    * This class is a singleton, the constructor will return the same instance.
-    * 1. Try to retrieve the jwt from the URL.
-    *       * If found: it is registered in the session storage.
-    *       * If not found: try to find it in session storage.
-    * 2. If there is a jwt it is validated.
-    * 3. If there is a valid jwt, the user is authenticated.
-    * 4. If not redirect to the oidc provider to retrieve a jwt.
-    */
+ * Authentication service. 
+ * This class is a singleton, the constructor will return the same instance.
+ * 1. Try to retrieve the jwt from the URL.
+ *       * If found: it is registered in the session storage.
+ *       * If not found: try to find it in session storage.
+ * 2. If there is a jwt it is validated.
+ * 3. If there is a valid jwt, the user is authenticated.
+ * 4. If not redirect to the oidc provider to retrieve a jwt.
+ * @date 01/02/2024 - 16:32:26
+ * @author A. Deman
+ *
+ * @export
+ * @class AuthService
+ * @typedef {AuthService}
+ */
 export class AuthService {
 
     /** Singleton instance. */
@@ -33,6 +39,9 @@ export class AuthService {
     /** Flag to determine if the authentication service is initialized, i.e.: the authenticatio nstatus is known.  */
     public authenticationStatusKnown = false;
 
+    /** Loger for this class. */
+    private _logger = new NoopLogger();
+
     /**
      * Singleton constructor.
      * @returns the unique instance of this class. 
@@ -44,13 +53,10 @@ export class AuthService {
         }
         return AuthService._INSTANCE;
     }
-    private _initializeJWT_(onlySessionStorage = false) {
-        setTimeout(()=> this.authenticated$.next(true),2000)
-        setTimeout(()=> this.authenticated$.next(false), 5000)
-    }
+
 
     /**
-     * Try to fetch a JWT.
+     * Tries to fetch a JWT.
      * @param onlySessionStorage Flag to determine if the JWT can be retrieved from the location.
      */
     private _initializeJWT(onlySessionStorage = false) {
@@ -58,6 +64,8 @@ export class AuthService {
             filter(settings => !!settings?.jwtStorageKey),
             take(1)
         ).subscribe(settings => {
+            this._logger = new LoggingManager(settings.logging).getLogger('AuthService').enter('_initializeJWT');
+            this._logger.info('Initialization of JWT')
             let authenticated = false;
             // Flag to determine if an invalid jwk has to be removed from storage.
             let cleanStorageFlag = false;
@@ -65,17 +73,17 @@ export class AuthService {
             let authenticationData: any = null
             if (!onlySessionStorage) {
                 const urlTokens = window.location.href.split('#');
-                console.log('ObserveDirective AuthService _initializeJWT urlTokens', urlTokens);
+                this._logger.debug('ObserveDirective AuthService _initializeJWT urlTokens', urlTokens);
                 const newLocation = urlTokens?.[0];
                 if (newLocation !== window.location.href) {
-                    console.log('AuthService _initializeJWT newLocation', newLocation);
+                    this._logger.trace('AuthService _initializeJWT newLocation', newLocation);
                     history.replaceState({}, '', newLocation);
                 }
                 const urlParams = new URLSearchParams(urlTokens?.[1]);
                 jwt = urlParams.get('access_token') || '';
 
 
-                console.log('AuthService _initializeJWT jwt', jwt);
+                this._logger.debug('AuthService _initializeJWT jwt', jwt);
             }
 
             if (!jwt) {
@@ -84,20 +92,20 @@ export class AuthService {
             }
             if (jwt) {
 
-                const validationEndpoint = this._settingsService.selectEndPointsForHost(settings,  window.location.hostname)?.validation;
+                const validationEndpoint = this._settingsService.selectEndPointsForHost(settings, window.location.hostname)?.validation;
                 this._introspect(validationEndpoint, jwt)
                     .then(data => {
-                        console.log('_initializeJWT data', authenticationData);
+                        this._logger.trace('_initializeJWT data', authenticationData);
                         authenticationData = data?.profile;
-                        console.log('_initializeJWT authenticationData', authenticationData);
+                        this._logger.trace('_initializeJWT authenticationData', authenticationData);
                         authenticated = data?.active;
-                        console.log('_initializeJWT data', authenticationData);
+                        this._logger.trace('_initializeJWT data', authenticationData);
 
-                        console.log('_initializeJWT authenticated', authenticated);
+                        this._logger.trace('_initializeJWT authenticated', authenticated);
 
 
                     })
-                    .catch(err => console.log('AuthService _initializeJWT err', err))
+                    .catch(err => this._logger.error('AuthService _initializeJWT err', err))
                     .finally(() => {
                         if (authenticated) {
                             sessionStorage.setItem(settings.jwtStorageKey, jwt);
@@ -105,21 +113,22 @@ export class AuthService {
                         } else if (cleanStorageFlag) {
                             sessionStorage.removeItem(settings.jwtStorageKey);
                         }
-                        console.log('ObserveDirective AuthService _initializeJWT authenticated$ emetting', authenticated);
+                        this._logger.trace('ObserveDirective AuthService _initializeJWT authenticated$ emetting', authenticated);
                         this.authenticated$.next(authenticated);
                         this.jwt$.next(jwt);
-                        console.log('ObserveDirective AuthService _initializeJWT authenticationData$ emetting', authenticationData);
+                        this._logger.trace('ObserveDirective AuthService _initializeJWT authenticationData$ emetting', authenticationData);
                         this.authenticationStatusKnown = true;
                         this.authenticationData$.next(authenticationData);
                     });
             } else {
-                console.log('ObserveDirective AuthService _initializeJWT (no jwt) authenticated$ emetting', authenticated);
+                this._logger.trace('ObserveDirective AuthService _initializeJWT (no jwt) authenticated$ emetting', authenticated);
                 this.authenticated$.next(authenticated);
                 this.jwt$.next('');
-                console.log('AuthService _initializeJWT authenticationData$ emetting null');
+                this._logger.trace('AuthService _initializeJWT authenticationData$ emetting null');
                 this.authenticationStatusKnown = true;
                 this.authenticationData$.next(null)
             }
+            this._logger.leave();
         });
     }
 
@@ -130,7 +139,7 @@ export class AuthService {
      * @returns The introspection data.
      */
     private async _introspect(url: string, jwt: string): Promise<any> {
-        console.log('_introspect url', url);
+        this._logger.enter('_introspect').debug('_introspect url', url);
 
 
         const response = await fetch(url, {
@@ -141,13 +150,13 @@ export class AuthService {
             method: "post",
         });
         const status = response.status;
-        console.log('_introspect status', status);
+        this._logger.debug('_introspect status', status);
         if (status !== 200) {
-            console.log('Error status', status);
+            this._logger.error('Error status', status);
             return null;
         }
         const data = response.json();
-        console.log('_introspect data', data);
+        this._logger.debug('_introspect data', data).leave();
         return data;
     }
 
@@ -155,29 +164,32 @@ export class AuthService {
      * Performs the login action.
      */
     login() {
+        
         this._settingsService.settings$.pipe(
             filter(settings => !!settings?.jwtStorageKey),
             take(1),
         ).subscribe(settings => {
-            const loginEndPoint = this._settingsService.selectEndPointsForHost(settings,  window.location.hostname)?.login;
-            console.log('AuthService login, settings', settings);
-            console.log('AuthService login, loginEndPoint', loginEndPoint);
+            const loginEndPoint = this._settingsService.selectEndPointsForHost(settings, window.location.hostname)?.login;
+            this._logger.enter('login').debug('AuthService login, loginEndPoint', loginEndPoint);
+            this._logger.debug('AuthService login, settings', settings).leave();
             window.location.href = loginEndPoint;
         });
     }
 
-     /**
-     * Performs the logout action.
-     */
+    /**
+    * Performs the logout action.
+    */
     logout() {
         this._settingsService.settings$.pipe(
             filter(settings => !!settings.jwtStorageKey),
             take(1),
         ).subscribe(settings => {
-            const logoutEndPoint = this._settingsService.selectEndPointsForHost(settings,  window.location.hostname)?.logout;
-            console.log('AuthService login, logoutEndPoint', logoutEndPoint);
+            const logoutEndPoint = this._settingsService.selectEndPointsForHost(settings, window.location.hostname)?.logout;
+            this._logger.enter('logout')
+                .debug('AuthService login, logoutEndPoint', logoutEndPoint)
+                .leave();
             sessionStorage.removeItem(settings.jwtStorageKey);
             window.location.href = logoutEndPoint
-      })
+        })
     }
 }

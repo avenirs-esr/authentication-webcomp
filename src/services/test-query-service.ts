@@ -1,12 +1,18 @@
-import { AuthSettingsService } from './auth-settings-service';
-import { AuthSettings, DEFAULT_AUTH_SETTINGS, AuthEndPointsSettings } from "../settings";
-import { Observable, ReplaySubject, combineLatest, filter, map, take, tap } from 'rxjs';
+import { ReplaySubject, combineLatest, filter, map, take, tap } from 'rxjs';
 import { AuthService } from './auth-service';
+import { AuthSettingsService } from './auth-settings-service';
+
 
 
 /**
  * Test query service.
  * Performs a query to check the oidc integration.
+ * @date 01/02/2024 - 16:38:57
+ * @author A. Deman.
+ *
+ * @export
+ * @class TestQueryService
+ * @typedef {TestQueryService}
  */
 export class TestQueryService {
 

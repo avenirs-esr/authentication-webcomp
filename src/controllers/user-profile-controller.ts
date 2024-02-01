@@ -1,23 +1,50 @@
+
+
 import { ReactiveController, ReactiveControllerHost } from "lit";
-import { Observable, filter, map, mergeMap, tap } from 'rxjs';
+import { Observable, map, tap } from 'rxjs';
 import { UserProfile } from '../models/';
 import { AuthService } from '../services';
+import { LoggingManager, NoopLogger } from "../logging";
 
 
 /**
- * Manages the user profile widgets.
+ * Controller for the user profile widgets.
+ * @date 01/02/2024 - 16:10:21
+ * @author A. Deman
+ *
+ * @export 
+ * @class UserProfileController
+ * @typedef {UserProfileController}
+ * @implements {ReactiveController}
  */
 export class UserProfileController implements ReactiveController {
-  host: ReactiveControllerHost;
-  authService: AuthService;
-  profile$: Observable<UserProfile | null>;
 
+  /** Logger for this instance. */
+  private _logger = new NoopLogger()
+
+  /** The associated UI element. */
+  host: ReactiveControllerHost;
+
+  /** Authentication service. */
+  authService: AuthService;
+
+  /** User profile Observable. */
+  profile$: Observable<UserProfile | null>;
+  
+  /**
+   * Creates an instance of UserProfileController.
+   * @date 01/02/2024 - 16:53:52
+   *
+   * @constructor
+   * @param {ReactiveControllerHost} host The ui element controlled by this instance.
+   */
   constructor(host: ReactiveControllerHost) {
     (this.host = host).addController(this);
+    this._logger = new LoggingManager().getLogger('UserProfileController');
     this.authService = new AuthService();
 
     this.profile$ =  this.authService.authenticationData$.pipe(
-      tap(authenticationData => console.log('UserProfileController authenticationData', authenticationData)),
+      tap(authenticationData => this._logger.debug('UserProfileController authenticationData', authenticationData)),
       map(authenticationData => {
         let userProfil: UserProfile | null = null;
         
@@ -32,13 +59,20 @@ export class UserProfileController implements ReactiveController {
 
         return userProfil;
       })
-
-    )
+    );
   }
-
+  
+  /**
+   * Lit method.
+   * @date 01/02/2024 - 16:54:20
+   */
   hostConnected() {
   }
-
+  
+  /**
+   * Lit method.
+   * @date 01/02/2024 - 16:54:33
+   */
   hostDisconnected() {
   }
 }
