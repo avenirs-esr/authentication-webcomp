@@ -1,1 +1,1 @@
-export * from './manage-subscription-directive';
+export * from './reactive-attribute-disable-directive';
