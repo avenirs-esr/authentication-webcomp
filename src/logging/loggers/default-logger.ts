@@ -17,8 +17,8 @@ import { LoggingContext } from '../models';
  */
 export class DefaultLogger implements Logger {
 
-   /** The current context of the logger. */
-   private _context: LoggingContext | undefined;
+   /** The context stacks of the logger. */
+   private _contexts: LoggingContext[] = [];
 
    /** Flag to determine if the logger is disabled. */
    disabled = false;
@@ -41,7 +41,7 @@ export class DefaultLogger implements Logger {
     */
    log(level: LogLevel, messageParts: any[]): Logger {
       if (level >= this.level && !this.disabled) {
-         this._appender.append(this._formatter.format(this.name, level, messageParts, this._context));
+         this._appender.append(this._formatter.format(this.name, level, messageParts, this._contexts?.[this._contexts.length - 1]));
       }
       return this;
    }
@@ -115,7 +115,7 @@ export class DefaultLogger implements Logger {
     * @param {LoggingContext | string }context The new current context or the source (equivalent to {source:...}).
     */
    enter(context: LoggingContext | string): Logger {
-      this._context = typeof context === "string"? {source: context}: context;
+      this._contexts.push( typeof context === "string"? {source: context}: context);
       return this;
    }
 
@@ -123,7 +123,7 @@ export class DefaultLogger implements Logger {
    * Leave a logging context.
    */
   leave(): Logger {
-      this._context = undefined;
+      this._contexts.pop();
       return this;
    }
 
