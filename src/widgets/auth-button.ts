@@ -67,7 +67,7 @@ export class AuthButton extends LitElement {
    * Lit callback.
    */
   connectedCallback(): void {
-   super.connectedCallback();
+    super.connectedCallback();
     if (!this._subscription) {
       this._subscription = this._authController.authenticated$.pipe(
         tap(authenticated =>  this._logger
