@@ -1,5 +1,5 @@
 import { AttributePart, noChange } from 'lit';
-import { AsyncDirective, AttributePartInfo, ElementPartInfo, PartInfo, PartType } from 'lit/async-directive.js';
+import { AsyncDirective, PartInfo, PartType } from 'lit/async-directive.js';
 import { directive } from 'lit/directive.js';
 import { Observable, Subscription, distinctUntilChanged, map } from 'rxjs';
 import { LoggingManager, NoopLogger } from '../logging';
@@ -12,7 +12,7 @@ import { LoggingManager, NoopLogger } from '../logging';
  * @author A. Deman
  *
  * @class ReactiveDisableAttributeDirective
- * @typedef {ReactiveDisableAttributeDirective}
+ * @type {ReactiveDisableAttributeDirective}
  * @extends {AsyncDirective}
  */
 class ReactiveDisableAttributeDirective extends AsyncDirective {
