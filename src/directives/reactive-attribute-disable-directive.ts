@@ -12,7 +12,7 @@ import { LoggingManager, NoopLogger } from '../logging';
  * @author A. Deman
  *
  * @class ReactiveDisableAttributeDirective
- * @typedef {ReactiveDisableAttributeDirective}
+ * @type {ReactiveDisableAttributeDirective}
  * @extends {AsyncDirective}
  */
 class ReactiveDisableAttributeDirective extends AsyncDirective {
