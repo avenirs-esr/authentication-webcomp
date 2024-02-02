@@ -39,8 +39,6 @@ export class AuthController implements ReactiveController {
     this.authService = new AuthService();
 
     this._logger = new LoggingManager().getLogger('AuthController')
-    
-    
   }
 
   hostConnected() {
