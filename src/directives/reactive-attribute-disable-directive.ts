@@ -109,7 +109,7 @@ class ReactiveDisableAttributeDirective extends AsyncDirective {
     this._part = part;
     this._updateDOM();
     super.update(part, props)
-    this.logger.leave();
+    this._logger.leave();
   }
 
   disconnected() {
