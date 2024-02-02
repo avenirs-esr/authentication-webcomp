@@ -14,7 +14,7 @@ import { LogLevel } from '../levels';
  */
 export interface LoggingSettings {
 
-    /** Factories used to creates the logger. */
+    /** Factories used to creates the loggers. */
     factories: {
 
         /** Default logger factory. */
