@@ -1,9 +1,10 @@
 
-import { AuthController } from './../controllers';
-import { html, css, LitElement, TemplateResult } from 'lit';
+import { LitElement, css, html } from 'lit';
 import { customElement } from 'lit/decorators.js';
-import { Subscription, map, tap } from 'rxjs';
-import { Logger, LoggingManager, NoopLogger } from '../logging';
+import { Subscription, tap } from 'rxjs';
+import { Logger, LoggingManager } from '../logging';
+import { AuthController } from './../controllers';
+
 
 
 
@@ -14,7 +15,7 @@ import { Logger, LoggingManager, NoopLogger } from '../logging';
  *
  * @export {AuthButton}
  * @class AuthButton
- * @typedef {AuthButton}
+ * @type {AuthButton}
  * @extends {LitElement}
  */
 @customElement('auth-button')
@@ -26,7 +27,7 @@ export class AuthButton extends LitElement {
   /** Controller associated to this UI element */
   private _authController = new AuthController(this);
 
-  /** Subscription to authenticated Observable. */
+  /** Subscription to authenticated status Observable. */
   private _subscription: Subscription | null = null;
 
   /** Initialization flag. */
@@ -66,18 +67,19 @@ export class AuthButton extends LitElement {
    * Lit callback.
    */
   connectedCallback(): void {
-    this._logger.enter('connectedCallback')
+   super.connectedCallback();
     if (!this._subscription) {
       this._subscription = this._authController.authenticated$.pipe(
-        tap(authenticated => this._logger
+        tap(authenticated =>  this._logger
           .enter('connectedCallback')
           .debug('AuthButton authenticated ', authenticated)
           .leave()
         ),
 
       ).subscribe(authenticated => {
-        this.initialized = true;
         this.authenticated = authenticated;
+        this.initialized = true;
+        this._logger.enter('connectedCallback').debug('this.authenticated', this.authenticated, 'initialized', this.initialized); 
       });
     }
   }
@@ -98,6 +100,8 @@ export class AuthButton extends LitElement {
    * Lit callback.
    */
   render() {
+    console.log('AuthButton render');
+    this._logger.enter('render').debug('this_initialized', this._initialized);
     if (this._initialized) {
       console.log('AuthButton Render');
       return this.authenticated ? html`<button @click="${this._onLogout}">logout</button>` : html`<button @click="${this._onLogin}">login</button>`
@@ -109,9 +113,12 @@ export class AuthButton extends LitElement {
   }
 
   set initialized(initialized: boolean) {
+    this._logger.enter('set initialized').debug('initialized', initialized);
     if (!!initialized != !!this._initialized) {
       this._initialized = !!initialized;
+      this._logger.debug('this._initialized', this._initialized);
       if (this._initialized) {
+        this._logger.debug('beefore this.requestUpdate').leave();
         this.requestUpdate();
       }
     }
