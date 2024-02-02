@@ -44,7 +44,7 @@ class ReactiveDisableAttributeDirective extends AsyncDirective {
     super(partInfo);
     this._logger = new LoggingManager().getLogger('ReactiveDisableAttributeDirective')
 
-    this._logger.trace('Constructor partInfo.type', partInfo.type, 'PartType.ATTRIBUTE', PartType.BOOLEAN_ATTRIBUTE);
+    this._logger.enter('constructor').trace('Constructor partInfo.type', partInfo.type, 'PartType.ATTRIBUTE', PartType.BOOLEAN_ATTRIBUTE).leave();
 
     // Checks that the partInfo instance is associated to an element.
     if (partInfo.type !== PartType.ELEMENT) {
@@ -60,7 +60,7 @@ class ReactiveDisableAttributeDirective extends AsyncDirective {
    * @param reverse If true the attribute disabled is true if the emitted value is false.
    */
   render(observable: Observable<unknown>, reverse: boolean) {
-    this._logger.trace('ReactiveDisableAttributeDirective render');
+   
     if (this._observable !== observable) {
       this._subscription?.unsubscribe();
       this._observable = observable;
@@ -85,18 +85,16 @@ class ReactiveDisableAttributeDirective extends AsyncDirective {
    */
   private _updateDOM() {
     if (this.isConnected) {
-      this._logger.trace('ReactiveDisableAttributeDirective _updateDOM this._part', this._part);
-      this._logger.trace('ReactiveDisableAttributeDirective _updateDOM this._part?.element', this._part?.element);
-      this._logger.trace('ReactiveDisableAttributeDirective _updateDOM this._value', this._value);
       if (!this._value) {
-        this._logger.trace('ReactiveDisableAttributeDirective _updateDOM remove attribute');
+        this._logger.enter('_updateDOM').trace('ReactiveDisableAttributeDirective remove attribute');
         this._part?.element?.removeAttribute('disabled');
       } else if (this._part?.element?.getAttribute('disabled') !== 'true') {
         const value = this._part?.element?.getAttribute('disabled')
-        this._logger.trace('ReactiveDisableAttributeDirective _updateDOM setAttribute disabled initial value', typeof value);
-        this._logger.trace('ReactiveDisableAttributeDirective _updateDOM setAttribute disabled');
+        this._logger.trace('ReactiveDisableAttributeDirective  setAttribute disabled initial value', typeof value);
+        this._logger.trace('ReactiveDisableAttributeDirective  setAttribute disabled');
         this._part?.element?.setAttribute('disabled', 'true');
       }
+      this._logger.leave();
 
     }
   }
@@ -106,13 +104,12 @@ class ReactiveDisableAttributeDirective extends AsyncDirective {
    * @param part The AttributePart associated to the directive that can be used to update the DOM.
    */
   update(part: AttributePart, props: Array<unknown>) {
-    this._logger.trace('ReactiveDisableAttributeDirective this.update part', part.element);
-    this._logger.trace('ReactiveDisableAttributeDirective this.update this._value', this._value);
+    this._logger.enter('update').trace('ReactiveDisableAttributeDirective part', part.element);
+    this._logger.trace('ReactiveDisableAttributeDirective this._value', this._value);
     this._part = part;
     this._updateDOM();
-    //part?.element?.setAttribute('disabled', String(!this._value));
-    this._logger.trace('ReactiveDisableAttributeDirective super.update');
     super.update(part, props)
+    this.logger.leave();
   }
 
   disconnected() {
