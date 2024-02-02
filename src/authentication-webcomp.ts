@@ -1,9 +1,11 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
+//import { customElement, property } from 'lit/decorators.js';
 import { AuthSettingsService } from './services';
 import { AuthSettings } from './settings';
 
 import './widgets';
+import { Logger, LoggingManager, NoopLogger } from './logging';
 
 
 /**
@@ -14,11 +16,13 @@ import './widgets';
  *
  * @export
  * @class AuthenticationWebcomp
- * @typedef {AuthenticationWebcomp}
+ * @type {AuthenticationWebcomp}
  * @extends {LitElement}
  */
 @customElement('authentication-webcomp')
 export class AuthenticationWebcomp extends LitElement {
+
+  private _logger : Logger | undefined;
   
   static styles = css`
       .main-container {
@@ -38,6 +42,7 @@ export class AuthenticationWebcomp extends LitElement {
         return false
       }
       new AuthSettingsService().update(newVal);
+     
       return true;
     }
   })
@@ -51,6 +56,7 @@ export class AuthenticationWebcomp extends LitElement {
    * @returns {*}
    */
   render(): any {
+    this.logger.enter('render').debug('before render').leave();
     return html`
     <div class="main-container">
       <user-profile-panel></user-profile-panel>
@@ -58,4 +64,16 @@ export class AuthenticationWebcomp extends LitElement {
     </div>
     `;
   }
+
+  private get logger():Logger {
+    if (!this._logger){
+      this._logger = new LoggingManager().getLogger('AuthenticationWebcomp');
+    }
+    return this._logger;
+  }
+
+  private set logger(logger: Logger){
+    this._logger = logger;
+  }
 }
+
